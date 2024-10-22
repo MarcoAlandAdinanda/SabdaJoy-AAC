@@ -368,6 +368,8 @@ void setup()
 
   pinMode(MENU_BTN, INPUT_PULLUP);
 
+  pinMode(JOYSTICK_BTN, INPUT_PULLUP); // TESTING
+
   setup_wifi();
 
   setup_i2s_audio(volume_level);
@@ -388,6 +390,7 @@ void loop()
   if (digitalRead(MENU_BTN) == LOW && !menu_active)
   {
     delay(200); // Simple debounce
+    Serial.println("TOMBOL MENU DITEKAN")
     menu_active = true;
     menu_state = MAIN_MENU;
     current_selection = 0;
