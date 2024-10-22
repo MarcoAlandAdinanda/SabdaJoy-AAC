@@ -359,6 +359,34 @@ void handle_selection()
   else if (digitalRead(JOYSTICK_BTN) == HIGH) button_pressed = false;
 }
 
+void handle_output_joystick() // delete output (word by word)
+{
+  int x_value = analogRead(JOYSTICK_X);
+
+  if (x_value < JOYSTICK_THRESHOLD - 500 && millis() - last_move > move_delay)
+  {
+    int last_space = chosen_option.lastIndexOf(' ');
+    if (last_space != -1)
+    {
+      chosen_option = chosen_option.substring(0, last_space);
+    }
+    else
+    {
+      chosen_option = "";
+    }
+
+    last_move = millis();
+  }
+}
+
+void speak()
+{
+  if(digitalRead(JOYSTICK_BTN) == LOW && !menu_active)
+  {
+    audio.connecttospeech(chosen_option.c_str(), "id");
+    delay(200); // debounce delay
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -376,7 +404,7 @@ void setup()
 
   setup_display();
 
-  audio.connecttospeech("The device is ready to be used", "en"); // Google TTS
+  audio.connecttospeech("The device is ready", "en"); // Google TTS
 
   delay(5000);
 
@@ -390,7 +418,7 @@ void loop()
   if (digitalRead(MENU_BTN) == LOW && !menu_active)
   {
     delay(200); // Simple debounce
-    Serial.println("TOMBOL MENU DITEKAN")
+    Serial.println("TOMBOL MENU DITEKAN");
     menu_active = true;
     menu_state = MAIN_MENU;
     current_selection = 0;
@@ -407,6 +435,8 @@ void loop()
   else if (option_chosen)
   {
     output_menu();
+    handle_output_joystick();
+    speak();
   }
 }
 
